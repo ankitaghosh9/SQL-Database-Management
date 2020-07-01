@@ -1,0 +1,201 @@
+declare
+message varchar2(20):='Hello, World!';
+begin
+dbms_output.put_line(message);
+end;
+ /
+
+--------------------------------------------------
+lab 8 exercise
+
+create table studenttable(
+RollNo int primary key,
+GPA number(4,2));
+
+insert into studenttable values(1,5.8);
+insert into studenttable values(2,6.5);
+insert into studenttable values(3,3.4);
+insert into studenttable values(4,7.8);
+insert into studenttable values(5,9.5);
+
+1.
+declare
+rollnum studenttable.RollNo%Type;
+stgpa studenttable.GPA%Type;
+begin
+rollnum:=&RollNumber;
+select GPA into stgpa from studenttable where RollNo=rollnum;
+dbms_output.put_line('GPA of RollNo:' ||rollnum|| ' is ' ||stgpa);
+end;
+/
+
+2.
+declare
+rollnum studenttable.RollNo%Type;
+stgpa studenttable.GPA%Type;
+grade varchar(2);
+begin
+rollnum:=&RollNumber;
+select GPA into stgpa from studenttable where RollNo=rollnum;
+
+if (stgpa>9 and stgpa<10) then grade:='A+';
+elsif stgpa>8 then grade:='A';
+elsif stgpa>7 then grade:='B';
+elsif stgpa>6 then grade:='C';
+elsif stgpa>5 then grade:='D';
+elsif stgpa>4 then grade:='E';
+else grade:='F';
+end if;
+dbms_output.put_line('Grade of RollNo:' ||rollnum|| ' is ' ||grade);
+end;
+/
+
+***3.
+declare
+idate date;
+rdate date;
+numdays date;
+fine number(6,2);
+begin
+idate:=&issuedate;
+rdate:=&returndate;
+numdays:=rdate-idate
+dbms_output.put_line('Number of days' ||numdays);
+end;
+/
+
+4.
+declare
+rollnum int:=1;
+stgpa studenttable.GPA%Type;
+grade varchar(2);
+begin
+loop
+select GPA into stgpa from studenttable where RollNo=rollnum;
+if (stgpa>9 and stgpa<10) then grade:='A+';
+elsif stgpa>8 then grade:='A';
+elsif stgpa>7 then grade:='B';
+elsif stgpa>6 then grade:='C';
+elsif stgpa>5 then grade:='D';
+elsif stgpa>4 then grade:='E';
+else grade:='F';
+end if;
+dbms_output.put_line('Grade of RollNo:' ||rollnum|| ' is ' ||grade);
+rollnum:=rollnum+1;
+if rollnum>5 then exit;
+end if;
+end loop;
+end;
+/
+
+
+5.
+alter table studenttable add (lettergrade varchar(2));
+
+declare
+rollnum int:=1;
+stgpa studenttable.GPA%Type;
+grade varchar(2);
+begin 
+while rollnum<6
+loop
+select GPA into stgpa from studenttable where RollNo=rollnum;
+if (stgpa>9 and stgpa<10) then grade:='A+';
+elsif stgpa>8 then grade:='A';
+elsif stgpa>7 then grade:='B';
+elsif stgpa>6 then grade:='C';
+elsif stgpa>5 then grade:='D';
+elsif stgpa>4 then grade:='E';
+else grade:='F';
+end if;
+update studenttable set lettergrade=grade where RollNo=rollnum;
+rollnum:=rollnum+1;
+end loop;
+end;
+/
+
+
+6.
+declare
+rollnum int:=1;
+stgpa studenttable.GPA%Type;
+maxgpa number(4,2):=0;
+maxroll int:=0;
+begin 
+for rollnum in 1..5 loop
+select GPA into stgpa from studenttable where RollNo=rollnum;
+if stgpa>maxgpa then
+maxgpa:=stgpa;
+maxroll:=rollnum;
+end if;
+end loop;
+dbms_output.put_line('Max gpa of rollnumber:' ||maxroll|| ' with gpa ' ||maxgpa);
+end;
+/
+
+
+7.
+declare
+rollnum int:=1;
+stgpa studenttable.GPA%Type;
+grade varchar(2);
+begin
+loop
+select GPA into stgpa from studenttable where RollNo=rollnum;
+if (stgpa>9 and stgpa<10) then grade:='A+';
+elsif stgpa>8 then grade:='A';
+elsif stgpa>7 then grade:='B';
+elsif stgpa>6 then grade:='C';
+elsif stgpa>5 then grade:='D';
+elsif stgpa>4 then grade:='E';
+else grade:='F';
+end if;
+dbms_output.put_line('Grade of RollNo:' ||rollnum|| ' is ' ||grade);
+rollnum:=rollnum+1;
+if rollnum>5 then goto loopdone;
+end if;
+end loop;
+<<loopdone>>
+dbms_output.put_line(' ');
+end;
+/
+
+
+8.
+
+
+
+
+9. 
+insert into studenttable(RollNo,GPA) values(6,11.2);
+
+declare
+invalid_gpa Exception;
+rollnum int:=1;
+stgpa studenttable.GPA%Type;
+grade varchar(2);
+begin 
+while rollnum<8
+loop
+select GPA into stgpa from studenttable where RollNo=rollnum;
+if (stgpa>9 and stgpa<=10) then grade:='A+';
+elsif (stgpa>8 and stgpa<=9) then grade:='A';
+elsif (stgpa>7 and stgpa<=8) then grade:='B';
+elsif (stgpa>6 and stgpa<=7) then grade:='C';
+elsif (stgpa>5 and stgpa<=6) then grade:='D';                                    
+elsif (stgpa>4 and stgpa<=5) then grade:='E';
+elsif (stgpa>0 and stgpa<=4) then grade:='F';
+else 
+raise invalid_gpa;
+end if;
+update studenttable set lettergrade=grade where RollNo=rollnum;
+--<<in_loop>>
+rollnum:=rollnum+1;
+end loop;
+exception
+when invalid_gpa then
+dbms_output.put_line('GPA out of range');
+--goto in_loop;
+end;
+/
+

@@ -1,0 +1,109 @@
+create table employee(
+empno number(5) primary key,
+empname varchar(20) not null,
+gender char(1) not null,
+salary number(10,2) not null,
+address varchar(30) not null,
+DNo int, 
+constraint gchk  check(gender in ('M','F'))
+);
+
+-------------------------------------------------
+
+create table department(
+deptno int primary key,
+deptname varchar(20) unique not null,
+location varchar(30)
+);
+
+-------------------------------------------------
+alter table employee add constraint fk foreign key(DNo) references department(deptno);
+-------------------------------------------------
+insert into employee values(10101,'AAA','F',100000,'MANIPAL', 345);
+insert into employee values(10124,'BBB','M',50000,'MANIPAL', 350);
+insert into employee values(10156,'CCC','F',50000,'MUMBAI', 345);
+insert into employee values(10177,'DDD','M',70000,'MUMBAI', 355);
+
+insert into department values(345,'IT','AB1');
+insert into department values(350,'MECH','AB1');
+insert into department values(355,'CHEM','AB2');
+insert into department values(360,'HR','AB5');
+-------------------------------------------------------------------
+insert into employee(empno,empname,salary) values(10180,'ABC',100000);
+insert into department values(345,'CSE','AB1');
+------------------------------------------------------------------
+update employee set gender ='O' where empno=10101;
+delete from department where deptno=345;
+-----------------------------------------------------------------
+alter table employee drop constraint fk;
+alter table employee add constraint fkr foreign key(DNo) references department(deptno) on delete cascade;
+delete from department where deptno=350;
+-----------------------------------------------------------------
+alter table employee modify salary default(10000);
+insert into employee(empno,empname,gender,address) values(10180,'ABC','F','UDUPI');
+-----------------------------------------------------------------
+select name,dept_name from student;
+-------------------------------------------
+select * from instructor where dept_name='Comp. Sci.';
+-------------------------------------------
+select title from course where dept_name='Comp. Sci.' and credits=3;
+-------------------------------------------
+select course_id,title from takes natural join course where id=12345;
+-------------------------------------------
+select * from instructor where salary between 40000 and 90000;
+-------------------------------------------
+(select id from instructor) minus (select id from teaches);
+------------------------------------------
+select name,title,year from takes natural join section join student using(id) join course using(course_id) where room_number=101;
+------------------------------------------
+select name,course_id,title as c_name from student natural join takes natural join course where year=2009;
+------------------------------------------
+select distinct T.name,T.salary as inst_salary from instructor T, instructor S where S.dept_name='Comp. Sci.' and T.salary>S.salary;
+------------------------------------------
+select name from instructor where dept_name like '%ch%';
+------------------------------------------
+select name, length(name) as length from student;
+------------------------------------------
+ select dept_name, substr(dept_name,3,3) from department;
+------------------------------------------
+ select upper(name) from instructor;
+-----------------------------------------
+select name, nvl(salary,10000) from instructor;
+----------------------------------------
+ select salary, round(salary/3,-2) from instructor;
+---------------------------------------
+create table employee(
+empno number(5) primary key,
+empname varchar(20) not null,
+gender char(1) not null,
+salary number(10,2) not null,
+address varchar(30) not null,
+DNo int, 
+constraint gchk  check(gender in ('M','F'))
+);
+
+alter table employee add dob date;
+
+insert into employee values(10101,'AAA','F',100000,'MANIPAL', 345,'12-feb-1990');
+insert into employee values(10124,'BBB','M',50000,'MANIPAL', 350,'15-feb-1990');
+insert into employee values(10156,'CCC','F',50000,'MUMBAI', 345,'12-jul-1990');
+insert into employee values(10177,'DDD','M',70000,'MUMBAI', 355,'12-feb-1988');
+
+ select to_char(dob,'DDMONYYYY') from employee;
+ select to_char(dob,'DDMONYY') from employee;
+ select to_char(dob,'DDMMYY') from employee;
+----------------------------------------------------
+
+ select empname,to_char(dob,'YEAR') from employee;
+ select empname,to_char(dob,'Year') from employee;
+ select empname,to_char(dob,'year') from employee;
+-----------------------------------------------------
+ select empname,to_char(dob,'DAY') from employee;
+ select empname,to_char(dob,'Day') from employee;
+-----------------------------------------------------
+ select empname,to_char(dob,'MONTH') from employee;
+ select empname,to_char(dob,'Month') from employee;
+------------------------------------------------------
+ select empname, last_day(dob),to_char( last_day(dob),'DAY') from employee;
+------------------------------------------------------
+select round(months_between(sysdate,dob)/12,0) from employee;

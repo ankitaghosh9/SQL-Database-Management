@@ -1,0 +1,58 @@
+1. select count(ID),course_id from takes group by course_id; 
+
+2. select dept_name,count(ID) from student group by dept_name 
+having count(ID)> (select count(ID)/count(distinct dept_name) as from student);
+
+3.select dept_name,count(course_id) from course group by dept_name;
+
+4. select dept_name, avg(salary) from instructor group by dept_name having avg(salary)>42000;
+
+5. select sec_id, count(sec_id) from takes where year=2009 and semester='Spring' group by sec_id;
+
+6. select course_id from prereq order by course_id;
+
+7. select * from instructor order by salary desc;
+
+8. select max(tot_salary) from ( select dept_name, sum(salary) as tot_salary 
+from instructor group by dept_name);
+
+9. select dept_name, avg_salary from 
+(select dept_name, avg(salary) as avg_salary from instructor group by dept_name)
+where avg_salary>42000;
+
+10. select sec_id,ns 
+from ( select sec_id, count(sec_id) as ns from takes where year=2010 and semester='Spring' group by sec_id) 
+where ns=(select max(ns) from 
+(select sec_id, count(sec_id) as ns from takes where year=2010 and semester='Spring' group by sec_id));
+
+11. select distinct T2.ID,I.name from takes T1 join teaches T2 using(course_id,sec_id,semester,year)
+join student S on (T1.ID=S.ID) join instructor I on (I.ID=T2.ID) where S.dept_name='Comp. Sci.';
+
+12. select dept_name, avg_sal, no_inst from
+(select dept_name,avg(salary) as avg_sal, count(ID) as no_inst from instructor group by dept_name)
+where avg_sal>50000 and no_inst >5;
+
+13. with max_budget(value) as (select max(budget) from department)
+select budget,dept_name from department D, max_budget B
+where D.budget=B.value;
+
+14. with dept_total(dept_name, value) as 
+(select dept_name,sum(salary) from instructor group by dept_name),
+dept_total_avg(value) as 
+(select avg(value) from dept_total)
+select dept_name from dept_total D1, dept_total_avg D2
+where D1.value>D2.value;
+
+15. with enrol(sec,value) as 
+(select sec_id, count(ID) from takes where semester='Fall' and year=2009 group by sec_id),
+max_enrol(value) as 
+(select max(value) from enrol)
+select sec, E.value from enrol E, max_enrol M
+where E.value=M.value;
+
+16. with tot_cred(dept_name,value) as 
+(select dept_name,sum(tot_cred) from student group by dept_name),
+fin_dept as
+(select value from tot_cred where dept_name='Finance')
+select dept_name,T.value from tot_cred T, fin_dept F
+where T.value>F.value;
